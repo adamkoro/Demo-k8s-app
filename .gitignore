@@ -153,3 +153,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+## Manual
+.vscode
