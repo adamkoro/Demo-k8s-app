@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"demo-k8s-app/mq-communicator/env"
 	"demo-k8s-app/mq-communicator/messageHandler"
 	"fmt"
 	"net/http"
@@ -59,7 +60,7 @@ func declareQueue(ch amqp.Channel, chName string) (amqp.Queue, error) {
 
 // Gin HTTP Endpoint for sending data to RabbitMQ
 func SendMessageToMq(c *gin.Context) {
-	conn, err := connectToMq(createConnUrl("user", "user", "192.168.1.100", "562", "/tst"))
+	conn, err := connectToMq(createConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
 	errorExist := messageHandler.IsError(err)
 	if errorExist {
 		msg := "Failed to connect to RabbitMQ"
