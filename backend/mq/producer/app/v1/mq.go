@@ -2,8 +2,8 @@ package v1
 
 import (
 	"context"
+	"demo-k8s-app/mq-communicator/messageHandler"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -59,10 +59,11 @@ func declareQueue(ch amqp.Channel, chName string) (amqp.Queue, error) {
 
 // Gin HTTP Endpoint for sending data to RabbitMQ
 func SendMessageToMq(c *gin.Context) {
-	conn, err := connectToMq(createConnUrl("user", "user", "192.168.1.100", "5672", "/tst"))
-	if err != nil {
+	conn, err := connectToMq(createConnUrl("user", "user", "192.168.1.100", "562", "/tst"))
+	errorExist := messageHandler.IsError(err)
+	if errorExist {
 		msg := "Failed to connect to RabbitMQ"
-		log.Printf("%s: %s", err, msg)
+		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
@@ -70,22 +71,25 @@ func SendMessageToMq(c *gin.Context) {
 	}
 
 	ch, err := createChannel(*conn)
-	if err != nil {
+	errorExist = messageHandler.IsError(err)
+	if errorExist {
 		msg := "Failed to open a channel"
-		log.Printf("%s: %s", err, msg)
+		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
+		return
 	}
 
 	defer closeChannel(*ch)
 
 	var chName = "Test1"
-	q, err := declareQueue(*ch, chName)
 
-	if err != nil {
+	q, err := declareQueue(*ch, chName)
+	errorExist = messageHandler.IsError(err)
+	if errorExist {
 		msg := "Failed to delcare the queue"
-		log.Printf("%s: %s", err, msg)
+		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
@@ -107,9 +111,10 @@ func SendMessageToMq(c *gin.Context) {
 		},
 	)
 
-	if err != nil {
+	errorExist = messageHandler.IsError(err)
+	if errorExist {
 		msg := "Failed to push message to the queue"
-		log.Printf("%s: %s", err, msg)
+		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
