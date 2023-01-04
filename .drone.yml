@@ -4,7 +4,6 @@ type: kubernetes
 
 steps:
   - name: build image
-    image: alpine
+    image: quay.io/buildah/stable
     commands:
-      - ls -la
-      - pwd
+      - buildah bud --layers=true --tag  harbor.adamkoro.com/demo-k8s/producer:test backend/mq/producer
