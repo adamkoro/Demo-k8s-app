@@ -3,9 +3,7 @@ kind: pipeline
 type: kubernetes
 
 steps:
-  - name: build image
+  - name: Test kubectl 
     image: rancher/kubectl:v1.23.7
     commands:
-      - kubectl get ns
       - kubectl get po
-      - kubectl get svc
