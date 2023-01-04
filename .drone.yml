@@ -1,10 +1,9 @@
 name: mq-producer
 kind: pipeline
 type: kubernetes
-
 steps:
   - name: build and push
-    image: quay.io/buildah/stable:latest
+    image: quay.io/buildah/stable:v1.28.0
     environment:
       PASSWORD:
         from_secret: REGISTRY_PASSWORD
