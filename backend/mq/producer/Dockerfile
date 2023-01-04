@@ -7,7 +7,12 @@ RUN go build -ldflags="-s -w" -o /mq-producer
 FROM harbor.adamkoro.com/bci/bci-micro:15.4
 WORKDIR /home/user
 COPY --from=build /mq-producer ${WORKDIR}
-ENV GIN_MODE=release
+ENV GIN_MODE=release \
+    USERNAME=guest \
+    PASSOWRD=guest \
+    MQHOST=127.0.0.1 \
+    PORT=5672 \
+    VHOST=/ 
 RUN echo "user:x:10000:10000:user:/home/user:/bin/bash" >> /etc/passwd && chown user /home/user/mq-producer && chmod u+x /home/user/mq-producer
 EXPOSE 8080
 USER user
