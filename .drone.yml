@@ -4,6 +4,8 @@ type: kubernetes
 
 steps:
   - name: build image
-    image: quay.io/buildah/stable
+    image: rancher/kubectl
     commands:
-      - buildah bud --layers=true --tag  harbor.adamkoro.com/demo-k8s/producer:test ./backend/mq/producer
+      - kubectl get ns
+      - kubectl get po
+      - kubectl get svc
