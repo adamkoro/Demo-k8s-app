@@ -6,4 +6,4 @@ steps:
   - name: build image
     image: quay.io/buildah/stable
     commands:
-      - buildah bud --layers=true --tag  harbor.adamkoro.com/demo-k8s/producer:test backend/mq/producer
+      - buildah bud --layers=true --tag  harbor.adamkoro.com/demo-k8s/producer:test ./backend/mq/producer
