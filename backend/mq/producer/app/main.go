@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	docs "demo-k8s-app/mq-communicator/docs"
+	"demo-k8s-app/mq-communicator/env"
 	endpoints "demo-k8s-app/mq-communicator/v1"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,7 @@ import (
 // @version 1.0
 // @description RabbitMQ Producer(sender) API
 func main() {
+	env.CheckEnvs()
 	router := gin.Default()
 	docs.SwaggerInfo.BasePath = "/v1"
 
