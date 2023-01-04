@@ -1,0 +1,22 @@
+info:
+  contact: {}
+  description: RabbitMQ Producer(sender) API
+  title: MQ-Producer Swagger
+  version: "1.0"
+paths:
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Liveness check
+      tags:
+      - health checks
+swagger: "2.0"
