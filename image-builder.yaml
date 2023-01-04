@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: image-build
+  namespace: default
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      containers:
+      - name: image-build 
+        image: quay.io/buildah/stable
+        imagePullPolicy: IfNotPresent
+        command:
+        - "buildah bud"
+        args:
+        - --layers=true
+        - "--tag producer:test"
+        - /build
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+          readOnlyRootFilesystem: false
+      restartPolicy: Never
+      serviceAccountName: default

@@ -6,4 +6,4 @@ steps:
   - name: Test kubectl 
     image: rancher/kubectl:v1.23.7
     commands:
-      - kubectl get po
+      - kubectl apply -f image-builder.yaml
