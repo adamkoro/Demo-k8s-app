@@ -11,3 +11,4 @@ steps:
     image: quay.io/buildah/stable:latest
     commands:
       - buildah bud --layers=true --tag producer:test ./backend/mq/producer
+    privileged: true
