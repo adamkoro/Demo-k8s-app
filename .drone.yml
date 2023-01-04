@@ -3,13 +3,13 @@ kind: pipeline
 type: kubernetes
 
 steps:
-  - name: build and push
+  - name: registry login
     image: quay.io/buildah/stable:latest
     environment:
       PASSWORD:
         from_secret: REGISTRY_PASSWORD
     commands:
       - buildah login --username='robot$demo-k8s-app+drone' --password="$PASSWORD" harbor.adamkoro.com
-      - buildah build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:test ./backend/mq/producer
+      - buildah build --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:test ./backend/mq/producer
       - buildah push harbor.adamkoro.com/demo-k8s-app/mq-producer:test
     privileged: true
