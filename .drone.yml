@@ -1,0 +1,10 @@
+name: mq-producer
+kind: pipeline
+type: kubernetes
+
+steps:
+  - name: build image
+    image: alpine
+    commands:
+      - ls -la
+      - pwd
