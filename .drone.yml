@@ -4,7 +4,7 @@ type: kubernetes
 
 steps:
   - name: build image
-    image: rancher/kubectl
+    image: rancher/kubectl:v1.23.7
     commands:
       - kubectl get ns
       - kubectl get po
