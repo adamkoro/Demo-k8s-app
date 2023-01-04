@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -11,8 +12,8 @@ import (
 )
 
 // Create conntection url string
-func createConnUrl(username, password, host, port string) string {
-	return fmt.Sprintf("amqp://%s:%s@%s:%s", username, password, host, port)
+func createConnUrl(username, password, host, port, vhost string) string {
+	return fmt.Sprintf("amqp://%s:%s@%s:%s%s", username, password, host, port, vhost)
 }
 
 // Create connection to RabbitMQ
@@ -58,20 +59,21 @@ func declareQueue(ch amqp.Channel, chName string) (amqp.Queue, error) {
 
 // Gin HTTP Endpoint for sending data to RabbitMQ
 func SendMessageToMq(c *gin.Context) {
-	conn, err := connectToMq(createConnUrl("adamkoro", "legostarwars99", "192.168.1.37", "5672"))
+	conn, err := connectToMq(createConnUrl("user", "user", "192.168.1.100", "5672", "/tst"))
 	if err != nil {
 		msg := "Failed to connect to RabbitMQ"
-		fmt.Printf("%s: %s", err, msg)
-		c.JSON(http.StatusInternalServerError, gin.H{
+		log.Printf("%s: %s", err, msg)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
+		return
 	}
 
 	ch, err := createChannel(*conn)
 	if err != nil {
 		msg := "Failed to open a channel"
-		fmt.Printf("%s: %s", err, msg)
-		c.JSON(http.StatusInternalServerError, gin.H{
+		log.Printf("%s: %s", err, msg)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
 	}
@@ -83,10 +85,11 @@ func SendMessageToMq(c *gin.Context) {
 
 	if err != nil {
 		msg := "Failed to delcare the queue"
-		fmt.Printf("%s: %s", err, msg)
-		c.JSON(http.StatusInternalServerError, gin.H{
+		log.Printf("%s: %s", err, msg)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
+		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -106,10 +109,11 @@ func SendMessageToMq(c *gin.Context) {
 
 	if err != nil {
 		msg := "Failed to push message to the queue"
-		fmt.Printf("%s: %s", err, msg)
-		c.JSON(http.StatusInternalServerError, gin.H{
+		log.Printf("%s: %s", err, msg)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": msg,
 		})
+		return
 	}
 
 	c.JSON(200, gin.H{
