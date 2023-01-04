@@ -3,7 +3,11 @@ kind: pipeline
 type: kubernetes
 
 steps:
-  - name: Test kubectl 
-    image: rancher/kubectl:v1.23.7
+  #- name: Test kubectl 
+  #  image: rancher/kubectl:v1.23.7
+  #  commands:
+  #    - kubectl apply -f image-builder.yaml
+  - name: Image build
+    image: quay.io/buildah/stable:latest
     commands:
-      - kubectl apply -f image-builder.yaml
+      - buildah bud --layers=true --tag producer:test ./backend/mq/producer
