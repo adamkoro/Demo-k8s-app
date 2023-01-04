@@ -3,12 +3,13 @@ kind: pipeline
 type: kubernetes
 
 steps:
-  #- name: Test kubectl 
-  #  image: rancher/kubectl:v1.23.7
-  #  commands:
-  #    - kubectl apply -f image-builder.yaml
-  - name: Image build
+  - name: build and push
     image: quay.io/buildah/stable:latest
+    environment:
+      PASSWORD:
+        from_secret: REGISTRY_PASSWORD
     commands:
-      - buildah bud --layers=true --tag producer:test ./backend/mq/producer
+      - buildah login --username='robot$demo-k8s-app+drone' --password="$PASSWORD" harbor.adamkoro.com
+      - buildah build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:test ./backend/mq/producer
+      - buildah push harbor.adamkoro.com/demo-k8s-app/mq-producer:test
     privileged: true
