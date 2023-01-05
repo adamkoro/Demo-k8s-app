@@ -5,6 +5,7 @@ import (
 	"demo-k8s-app/mq-communicator/env"
 	"demo-k8s-app/mq-communicator/messageHandler"
 	"demo-k8s-app/mq-communicator/mq"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,27 +13,34 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+// readyness check
 func Ping(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
+	fmt.Fprintf(c.Writer, "pong")
 }
 
-// Gin HTTP Endpoint for sending data to RabbitMQ
-func SendMessageToMq(c *gin.Context) {
+// liveness check
+func Health(c *gin.Context) {
 	conn, err := mq.ConnectToMq(mq.CreateConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
 	errorExist := messageHandler.IsError(err)
 	if errorExist {
 		msg := "Failed to connect to RabbitMQ"
 		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"status":  "unhealty",
 			"message": msg,
 		})
 		return
 	}
+	conn.Close()
+	c.JSON(http.StatusOK, gin.H{
+		"status": "healthy",
+	})
+}
 
-	ch, err := mq.CreateChannel(*conn)
-	errorExist = messageHandler.IsError(err)
+// Gin HTTP Endpoint for sending data to RabbitMQ
+func SendMessageToMq(c *gin.Context) {
+	ch, err := mq.CreateChannel(*Connection)
+	errorExist := messageHandler.IsError(err)
 	if errorExist {
 		msg := "Failed to open a channel"
 		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
@@ -67,8 +75,8 @@ func SendMessageToMq(c *gin.Context) {
 		false,
 		false,
 		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte("Hello World"),
+			ContentType: "application/json",
+			Body:        []byte("{id: 1}"),
 		},
 	)
 
@@ -81,7 +89,7 @@ func SendMessageToMq(c *gin.Context) {
 		})
 		return
 	}
-
+	//mq.CloseConnection(*conn)
 	c.JSON(200, gin.H{
 		"message": "Successfully published message to the queue",
 	})
