@@ -1,12 +1,12 @@
-#FROM harbor.adamkoro.com/bci/golang:1.19 as build
-#WORKDIR /go/src/build
-#COPY app/ ${WORKDIR}
-#RUN go mod download
-#RUN go build -ldflags="-s -w" -o /mq-producer
+FROM harbor.adamkoro.com/bci/golang:1.19 as build
+WORKDIR /go/src/build
+COPY app/ ${WORKDIR}
+RUN go mod download
+RUN go build -ldflags="-s -w" -o /mq-producer
 
 FROM harbor.adamkoro.com/bci/bci-micro:15.4
 WORKDIR /home/user
-COPY ./app/mq-producer ${WORKDIR}
+COPY --from=build /mq-producer ${WORKDIR}
 ENV GIN_MODE=release \
     USERNAME=guest \
     PASSOWRD=guest \
