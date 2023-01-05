@@ -4,7 +4,7 @@ import (
 	"context"
 	"demo-k8s-app/mq-communicator/env"
 	"demo-k8s-app/mq-communicator/messageHandler"
-	"fmt"
+	"demo-k8s-app/mq-communicator/mq"
 	"net/http"
 	"time"
 
@@ -12,55 +12,15 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-// Create conntection url string
-func createConnUrl(username, password, host, port, vhost string) string {
-	return fmt.Sprintf("amqp://%s:%s@%s:%s%s", username, password, host, port, vhost)
-}
-
-// Create connection to RabbitMQ
-func connectToMq(connUrl string) (*amqp.Connection, error) {
-	conn, err := amqp.Dial(connUrl)
-	if err != nil {
-		return nil, err
-	}
-	return conn, nil
-}
-
-// Create channel
-func createChannel(conn amqp.Connection) (*amqp.Channel, error) {
-	ch, err := conn.Channel()
-	if err != nil {
-		return nil, err
-	}
-	return ch, nil
-}
-
-// Close channel
-func closeChannel(ch amqp.Channel) {
-	ch.Close()
-}
-
-// Create queue
-func declareQueue(ch amqp.Channel, chName string) (amqp.Queue, error) {
-	q, err := ch.QueueDeclare(
-		chName,
-		true,
-		false,
-		false,
-		false,
-		amqp.Table{
-			"x-queue-type": "quorum",
-		},
-	)
-	if err != nil {
-		return q, err
-	}
-	return q, nil
+func Ping(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "pong",
+	})
 }
 
 // Gin HTTP Endpoint for sending data to RabbitMQ
 func SendMessageToMq(c *gin.Context) {
-	conn, err := connectToMq(createConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
+	conn, err := mq.ConnectToMq(mq.CreateConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
 	errorExist := messageHandler.IsError(err)
 	if errorExist {
 		msg := "Failed to connect to RabbitMQ"
@@ -71,7 +31,7 @@ func SendMessageToMq(c *gin.Context) {
 		return
 	}
 
-	ch, err := createChannel(*conn)
+	ch, err := mq.CreateChannel(*conn)
 	errorExist = messageHandler.IsError(err)
 	if errorExist {
 		msg := "Failed to open a channel"
@@ -82,11 +42,11 @@ func SendMessageToMq(c *gin.Context) {
 		return
 	}
 
-	defer closeChannel(*ch)
+	defer mq.CloseChannel(*ch)
 
 	var chName = "Test1"
 
-	q, err := declareQueue(*ch, chName)
+	q, err := mq.DeclareQueue(*ch, chName)
 	errorExist = messageHandler.IsError(err)
 	if errorExist {
 		msg := "Failed to delcare the queue"
