@@ -34,6 +34,10 @@ func CloseChannel(ch amqp.Channel) {
 	ch.Close()
 }
 
+func CloseConnection(conn amqp.Connection) {
+	conn.Close()
+}
+
 // Create queue
 func DeclareQueue(ch amqp.Channel, chName string) (amqp.Queue, error) {
 	q, err := ch.QueueDeclare(
@@ -42,9 +46,7 @@ func DeclareQueue(ch amqp.Channel, chName string) (amqp.Queue, error) {
 		false,
 		false,
 		false,
-		amqp.Table{
-			"x-queue-type": "quorum",
-		},
+		nil,
 	)
 	if err != nil {
 		return q, err
