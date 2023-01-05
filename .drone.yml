@@ -8,6 +8,7 @@ steps:
     - name: dockersock
       path: /var/run
     commands:
+      - sleep 10
       - docker build --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
 
 
