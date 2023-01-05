@@ -12,7 +12,7 @@ steps:
       - docker build --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
 
 
-  - name: login and push
+  - name: login
     image: docker:dind
     environment:
       PASSWORD:
@@ -32,6 +32,8 @@ steps:
       path: /var/run
     - name: build-cache
       path: /var/lib/docker
+    - name: login-cache
+      path: ~/.docker
     commands:
       - docker push harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA}
     
