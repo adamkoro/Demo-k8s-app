@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"demo-k8s-app/mq-communicator/env"
 	"demo-k8s-app/mq-communicator/messageHandler"
@@ -27,6 +28,10 @@ func init() {
 func main() {
 	router := gin.Default()
 
+	// Defautl route
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/producer")
+	})
 	// Api V1
 	v1 := router.Group("/:servicename/v1")
 	{
@@ -37,8 +42,11 @@ func main() {
 
 	// Http server config
 	srv := &http.Server{
-		Addr:    ":8080",
-		Handler: router,
+		Addr:           ":8080",
+		Handler:        router,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
 	}
 
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
