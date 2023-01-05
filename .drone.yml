@@ -24,6 +24,7 @@ steps:
       path: ~/.docker
     commands:
       - docker login --username='robot$demo-k8s-app+drone' --password="$PASSWORD" harbor.adamkoro.com
+      - docker push harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA}
 
   - name: push
     image: docker:dind
