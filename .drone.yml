@@ -2,6 +2,30 @@ name: mq-producer
 kind: pipeline
 type: kubernetes
 steps:
+  - name: build source code
+    image: harbor.adamkoro.com/bci/golang:1.19
+    volumes:
+    - name: build-cache
+      path: /build
+    commands:
+      - cp -r backend/mq/producer/* /build
+      - cd /build
+      - go mod download
+      - go build -ldflags="-s -w" -o mq-producer
+
+  - name: build image
+    image: quay.io/buildah/stable:v1.28.0
+    environment:
+      PASSWORD:
+        from_secret: REGISTRY_PASSWORD
+    volumes:
+    - name: build-cache
+      path: /build
+    - name: buildah-cache
+      path: /var/lib/containers
+    commands:
+      - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
+
   - name: login
     image: quay.io/buildah/stable:v1.28.0
     environment:
@@ -12,18 +36,6 @@ steps:
       path: /var/lib/containers
     commands:
       - buildah login --username='robot$demo-k8s-app+drone' --password="$PASSWORD" harbor.adamkoro.com
-
-  - name: build
-    image: quay.io/buildah/stable:v1.28.0
-    environment:
-      PASSWORD:
-        from_secret: REGISTRY_PASSWORD
-    volumes:
-    - name: buildah-cache
-      path: /var/lib/containers
-    commands:
-      - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
-    privileged: true
 
   - name: push
     image: quay.io/buildah/stable:v1.28.0
@@ -38,4 +50,6 @@ steps:
     
 volumes:
 - name: buildah-cache
+  temp: {}
+- name: build-cache
   temp: {}
