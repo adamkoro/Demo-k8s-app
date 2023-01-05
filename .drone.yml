@@ -9,6 +9,6 @@ steps:
         from_secret: REGISTRY_PASSWORD
     commands:
       - buildah login --username='robot$demo-k8s-app+drone' --password="$PASSWORD" harbor.adamkoro.com
-      - buildah --storage-driver vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:test ./backend/mq/producer
+      - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:test ./backend/mq/producer
       - buildah push harbor.adamkoro.com/demo-k8s-app/mq-producer:test
     #privileged: true
