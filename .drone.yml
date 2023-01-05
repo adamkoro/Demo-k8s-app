@@ -37,6 +37,4 @@ steps:
     
 volumes:
 - name: buildah-cache
-  claim:
-    name: buildah-cache
-    read_only: false
+  temp: {}
