@@ -2,13 +2,41 @@ name: mq-producer
 kind: pipeline
 type: kubernetes
 steps:
-  - name: build and push
+  - name: login
     image: quay.io/buildah/stable:v1.28.0
     environment:
       PASSWORD:
         from_secret: REGISTRY_PASSWORD
+    volumes:
+    - name: buildah-cache
+      path: /var/lib/containers
     commands:
       - buildah login --username='robot$demo-k8s-app+drone' --password="$PASSWORD" harbor.adamkoro.com
-      - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:test ./backend/mq/producer
-      - buildah push harbor.adamkoro.com/demo-k8s-app/mq-producer:test
-    #privileged: true
+
+  - name: build
+    image: quay.io/buildah/stable:v1.28.0
+    environment:
+      PASSWORD:
+        from_secret: REGISTRY_PASSWORD
+    volumes:
+    - name: buildah-cache
+      path: /var/lib/containers
+    commands:
+      - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
+
+  - name: push
+    image: quay.io/buildah/stable:v1.28.0
+    environment:
+      PASSWORD:
+        from_secret: REGISTRY_PASSWORD
+    volumes:
+    - name: buildah-cache
+      path: /var/lib/containers
+    commands:
+      - buildah push harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA}
+    
+volumes:
+- name: buildah-cache
+  claim:
+    name: buildah-cache
+    read_only: false
