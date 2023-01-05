@@ -23,6 +23,7 @@ steps:
       path: /var/lib/containers
     commands:
       - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
+    privileged: true
 
   - name: push
     image: quay.io/buildah/stable:v1.28.0
