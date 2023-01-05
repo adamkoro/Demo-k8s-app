@@ -8,10 +8,8 @@ steps:
     - name: build-cache
       path: /build
     commands:
-      - ls -la
       - cp -r backend/mq/producer/* /build
       - cd /build/app
-      - ls -la
       - go mod download
       - go build -ldflags="-s -w" -o mq-producer
 
