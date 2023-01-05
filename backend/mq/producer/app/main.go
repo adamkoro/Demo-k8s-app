@@ -28,7 +28,7 @@ func main() {
 	router := gin.Default()
 
 	// Api V1
-	v1 := router.Group("/v1")
+	v1 := router.Group("/api/v1/producer")
 	{
 		v1.GET("/ping", endpoints.Ping)
 		v1.GET("/health", endpoints.Health)
