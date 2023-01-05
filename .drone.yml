@@ -35,5 +35,3 @@ services:
 volumes:
 - name: dockersock
   temp: {}
-- name: build-cache
-  temp: {}
