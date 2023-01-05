@@ -10,7 +10,7 @@ steps:
     commands:
       - ls -la
       - cp -r backend/mq/producer/* /build
-      - cd /build
+      - cd /build/app
       - ls -la
       - go mod download
       - go build -ldflags="-s -w" -o mq-producer
@@ -26,7 +26,7 @@ steps:
     - name: buildah-cache
       path: /var/lib/containers
     commands:
-      - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
+      - buildah --storage-driver=vfs build --layers=true --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} /build
 
   - name: login
     image: quay.io/buildah/stable:v1.28.0

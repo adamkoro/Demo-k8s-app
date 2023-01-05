@@ -6,7 +6,7 @@
 
 FROM harbor.adamkoro.com/bci/bci-micro:15.4
 WORKDIR /home/user
-COPY ./mq-producer ${WORKDIR}
+COPY ./app/mq-producer ${WORKDIR}
 ENV GIN_MODE=release \
     USERNAME=guest \
     PASSOWRD=guest \
