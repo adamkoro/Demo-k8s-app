@@ -2,8 +2,8 @@ name: mq-producer
 kind: pipeline
 type: kubernetes
 steps:
-  - name: build image
-    image: docker:dind
+  - name: build
+    image: harbor.adamkoro.com/dockerproxy/library/docker:dind
     volumes:
     - name: dockersock
       path: /var/run
@@ -12,35 +12,21 @@ steps:
       - docker build --tag harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA} ./backend/mq/producer
 
 
-  - name: login
-    image: docker:dind
+  - name: login and push
+    image: harbor.adamkoro.com/dockerproxy/library/docker:dind
     environment:
       PASSWORD:
         from_secret: REGISTRY_PASSWORD
     volumes:
     - name: dockersock
       path: /var/run
-    - name: login-cache
-      path: ~/.docker
     commands:
       - docker login --username='robot$demo-k8s-app+drone' --password="$PASSWORD" harbor.adamkoro.com
-      - docker push harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA}
-
-  - name: push
-    image: docker:dind
-    volumes:
-    - name: dockersock
-      path: /var/run
-    - name: build-cache
-      path: /var/lib/docker
-    - name: login-cache
-      path: ~/.docker
-    commands:
       - docker push harbor.adamkoro.com/demo-k8s-app/mq-producer:${DRONE_COMMIT_SHA}
     
 services:
 - name: docker
-  image: docker:dind
+  image: harbor.adamkoro.com/dockerproxy/library/docker:dind
   privileged: true
   volumes:
   - name: dockersock
@@ -50,6 +36,4 @@ volumes:
 - name: dockersock
   temp: {}
 - name: build-cache
-  temp: {}
-- name: login-cache
   temp: {}
