@@ -1,0 +1,85 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/producer/v1/health": {
+            "get": {
+                "description": "check readyness",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ReadinessResponseStatusOk"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ReadinessResponseStatusError"
+                        }
+                    }
+                }
+            }
+        },
+        "/producer/v1/ping": {
+            "get": {
+                "description": "check liveness",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.LivenessResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "structs.LivenessResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "pong"
+                }
+            }
+        },
+        "structs.ReadinessResponseStatusError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Failed to connect to RabbitMQ"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "unhealthy"
+                }
+            }
+        },
+        "structs.ReadinessResponseStatusOk": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "healthy"
+                }
+            }
+        }
+    }
+}
