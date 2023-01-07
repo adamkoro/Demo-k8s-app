@@ -35,7 +35,7 @@ func CloseChannel(ch amqp.Channel) {
 }
 
 func CloseConnection(conn amqp.Connection) {
-	conn.Close()
+	defer conn.Close()
 }
 
 // Create queue
