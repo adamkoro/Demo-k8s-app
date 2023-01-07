@@ -5,7 +5,7 @@ import (
 	"demo-k8s-app/mq-communicator/env"
 	"demo-k8s-app/mq-communicator/messageHandler"
 	"demo-k8s-app/mq-communicator/mq"
-	"fmt"
+	"demo-k8s-app/mq-communicator/structs"
 	"net/http"
 	"time"
 
@@ -13,28 +13,48 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-// readyness check
+// Liveness check
+// @BasePath /producer/v1
+// @Schemes http
+// @Description check liveness
+// @Tags health
+// @Produce json
+// @Success 200 {object} structs.LivenessResponse
+// @Router /producer/v1/ping [get]
 func Ping(c *gin.Context) {
-	fmt.Fprintf(c.Writer, "pong")
+	var msg structs.LivenessResponse
+	msg.Message = "pong"
+	c.JSON(http.StatusOK, msg)
+
 }
 
-// liveness check
+// Readiness check
+// @BasePath /producer/v1
+// @Schemes http
+// @Description check readyness
+// @Tags health
+// @Produce json
+// @Success 200 {object} structs.ReadinessResponseStatusOk
+// @Failure 500 {object} structs.ReadinessResponseStatusError
+// @Router /producer/v1/health [get]
 func Health(c *gin.Context) {
+	var msgOK structs.ReadinessResponseStatusOk
+	var msgError structs.ReadinessResponseStatusError
+
 	conn, err := mq.ConnectToMq(mq.CreateConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
+
 	errorExist := messageHandler.IsError(err)
 	if errorExist {
-		msg := "Failed to connect to RabbitMQ"
-		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"status":  "unhealty",
-			"message": msg,
-		})
+		msgError.Status = "unhealthy"
+		msgError.Message = "Failed to connect to RabbitMQ"
+		messageHandler.ErrorLogger.Printf("%s: %s", err, msgError.Message)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, msgError)
 		return
 	}
+
 	conn.Close()
-	c.JSON(http.StatusOK, gin.H{
-		"status": "healthy",
-	})
+	msgOK.Status = "healthy"
+	c.JSON(http.StatusOK, msgOK)
 }
 
 // Gin HTTP Endpoint for sending data to RabbitMQ
