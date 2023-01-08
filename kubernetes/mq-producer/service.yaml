@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mq-producer
+  namespace: demo-k8s
+spec:
+  type: ClusterIP
+  ports:
+  - name: httpapi
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: mq-producer
+  sessionAffinity: None
+  
