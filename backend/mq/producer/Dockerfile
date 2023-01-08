@@ -8,7 +8,7 @@ RUN go build -ldflags="-s -w" -o /build/mq-producer
 FROM harbor.adamkoro.com/bci/bci-micro:15.4
 WORKDIR /home/user
 COPY --from=build /build/mq-producer ${WORKDIR}
-COPY --from=build /build/docs ${WORKDIR}
+COPY --from=build /build/docs/swagger.json ${WORKDIR}/docs
 ENV GIN_MODE=release \
     USERNAME=guest \
     PASSOWRD=guest \
