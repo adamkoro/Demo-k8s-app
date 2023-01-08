@@ -1,12 +1,14 @@
 FROM harbor.adamkoro.com/bci/golang:1.19 as build
 WORKDIR /go/src/build
 COPY cmd/ ${WORKDIR}
-RUN go mod download
-RUN go build -ldflags="-s -w" -o /mq-producer
+RUN go mod download && go install github.com/swaggo/swag/cmd/swag@latest && mkdir /build
+RUN swag init . && cp -r ./docs /build
+RUN go build -ldflags="-s -w" -o /build/mq-producer
 
 FROM harbor.adamkoro.com/bci/bci-micro:15.4
 WORKDIR /home/user
-COPY --from=build /mq-producer ${WORKDIR}
+COPY --from=build /build/mq-producer ${WORKDIR}
+COPY --from=build /build/docs ${WORKDIR}
 ENV GIN_MODE=release \
     USERNAME=guest \
     PASSOWRD=guest \
