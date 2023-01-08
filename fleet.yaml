@@ -7,5 +7,5 @@ imageScans:
   image: "harbor.adamkoro.com/demo-k8s-app/mq-producer" 
   tagName: mq-producer
   secretRef:
-    name: demo-k8s-harbor-secret
+    name: demo-k8s-registry
   interval: 5m 
