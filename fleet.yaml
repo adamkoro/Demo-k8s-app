@@ -6,6 +6,6 @@ imageScans:
       order: asc 
   image: "harbor.adamkoro.com/demo-k8s-app/mq-producer" 
   tagName: mq-producer
-  secretRef:
-    name: demo-k8s-registry
+  #secretRef:
+  #  name: demo-k8s-registry
   interval: 5m 
