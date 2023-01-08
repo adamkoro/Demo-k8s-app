@@ -57,7 +57,7 @@ func main() {
 
 	// Http server config
 	srv := &http.Server{
-		Addr:           ":8081",
+		Addr:           env.HttpPort,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,

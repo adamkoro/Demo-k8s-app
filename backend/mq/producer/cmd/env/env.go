@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	HttpPort  string
 	Username  string
 	Password  string
 	MqHost    string
@@ -30,6 +31,10 @@ func getMqHost() string {
 }
 
 func getPort() string {
+	return os.Getenv("PORT")
+}
+
+func getHttpPort() string {
 	return os.Getenv("PORT")
 }
 
@@ -67,6 +72,14 @@ func CheckPort(port string) string {
 	return port
 }
 
+func CheckHttpPort(port string) string {
+	if len(port) != 0 {
+		return port
+	}
+	port = "8080"
+	return port
+}
+
 func CheckMqHost(host string) string {
 	if len(host) != 0 {
 		return host
@@ -99,6 +112,7 @@ func getValues() {
 	Port = getPort()
 	Vhost = getVhost()
 	tmpQueues = getQueues()
+	HttpPort = getHttpPort()
 
 }
 
@@ -111,4 +125,5 @@ func CheckEnvs() {
 	Port = CheckPort(Port)
 	Vhost = CheckVhost(Vhost)
 	Queues = CheckQueues(tmpQueues)
+	HttpPort = CheckHttpPort(HttpPort)
 }
