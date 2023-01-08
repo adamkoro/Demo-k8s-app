@@ -135,7 +135,7 @@ func SendMessageToMq(c *gin.Context) {
 	msgOk.Message = QueueSuccessfull
 	logger.InfoLogger.Printf("%s", msgOk.Message)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	err = ch.PublishWithContext(
