@@ -8,6 +8,7 @@ import (
 	docs "demo-k8s-app/mq-communicator/docs"
 	"demo-k8s-app/mq-communicator/env"
 	logger "demo-k8s-app/mq-communicator/log"
+	"demo-k8s-app/mq-communicator/mq"
 	endpoints "demo-k8s-app/mq-communicator/v1"
 
 	"github.com/gin-gonic/gin"
@@ -21,12 +22,12 @@ var (
 func init() {
 	logger.InfoLogger.Println("Init phase started")
 	env.CheckEnvs()
-	//var err error
-	//endpoints.Connection, err = mq.ConnectToMq(mq.CreateConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
-	//errorExist := logger.IsError(err)
-	//if errorExist {
-	//	logger.ErrorLogger.Fatalf("%s: %s", err, endpoints.ConnectionFailed)
-	//}
+	var err error
+	endpoints.Connection, err = mq.ConnectToMq(mq.CreateConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
+	errorExist := logger.IsError(err)
+	if errorExist {
+		logger.ErrorLogger.Fatalf("%s: %s", err, endpoints.ConnectionFailed)
+	}
 	logger.InfoLogger.Println("RabbitMQ connection successfully established")
 	logger.InfoLogger.Println("Init phase finished")
 }
@@ -37,6 +38,7 @@ func main() {
 
 	router := gin.New()
 
+	// Custom logger: [HTTP] 2023/01/08 18:47:25 | Code: 404 | Method: GET | IP: 127.0.0.1 | Path: /producer/v1/test
 	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 		return fmt.Sprintf("[HTTP] %s | Code: %d | Method: %s | IP: %s | Path: %s\n",
 			param.TimeStamp.Format("2006/01/02 15:04:05"),
