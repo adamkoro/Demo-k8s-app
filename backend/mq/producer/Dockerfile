@@ -12,8 +12,9 @@ ENV GIN_MODE=release \
     PASSOWRD=guest \
     MQHOST=127.0.0.1 \
     PORT=5672 \
-    VHOST=/ 
+    VHOST=/ \
+    HTTP_PORT=8080
 RUN echo "user:x:10000:10000:user:/home/user:/bin/bash" >> /etc/passwd && chown user /home/user/mq-producer && chmod u+x /home/user/mq-producer
-EXPOSE 8080
+EXPOSE ${HTTP_PORT}
 USER user
 ENTRYPOINT ["./mq-producer"]

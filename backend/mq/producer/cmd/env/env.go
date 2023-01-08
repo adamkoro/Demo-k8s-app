@@ -35,7 +35,7 @@ func getPort() string {
 }
 
 func getHttpPort() string {
-	return os.Getenv("PORT")
+	return os.Getenv("HTTP_PORT")
 }
 
 func getVhost() string {
