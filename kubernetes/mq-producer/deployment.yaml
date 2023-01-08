@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: mq-producer
-          image: <image>:<tag> # {"$imagescan": "mq-producer"}
+          image: harbor.adamkoro.com/demo-k8s-app/mq-producer@sha256:5e0f3380433cc40d6bdebdfc6ff11402e2b4a06930f58674213a47d759c477be # {"$imagescan": "mq-producer"}
           imagePullPolicy: IfNotPresent
           ports:
           - name: http
