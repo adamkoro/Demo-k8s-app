@@ -1,7 +1,6 @@
 package env
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
@@ -97,7 +96,6 @@ func CheckVhost(vhost string) string {
 }
 
 func CheckQueues(queue string) []string {
-	fmt.Println(queue)
 	if len(queue) != 0 {
 		return strings.Split(queue, ",")
 	}
