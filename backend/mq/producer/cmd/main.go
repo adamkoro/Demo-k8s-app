@@ -13,8 +13,6 @@ import (
 	docs "demo-k8s-app/mq-communicator/docs"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var (
@@ -51,9 +49,6 @@ func main() {
 		v1.POST("/push", endpoints.SendMessageToMq)
 		v1.StaticFile("/docs/swagger.json", "docs/swagger.json")
 	}
-
-	url := ginSwagger.URL("http://localhost:8081" + apiEndpoint + "/docs/swagger.json") // The url pointing to API definition
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	// Http server config
 	srv := &http.Server{
