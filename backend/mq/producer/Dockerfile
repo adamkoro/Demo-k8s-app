@@ -7,8 +7,9 @@ RUN go build -ldflags="-s -w" -o /build/mq-producer
 
 FROM harbor.adamkoro.com/bci/bci-micro:15.4
 WORKDIR /home/user
+RUN mkdir docs
 COPY --from=build /build/mq-producer ${WORKDIR}
-COPY --from=build /build/docs/swagger.json ${WORKDIR}/docs
+COPY --from=build /build/docs/swagger.json docs/swagger.json
 ENV GIN_MODE=release \
     USERNAME=guest \
     PASSOWRD=guest \
@@ -16,7 +17,7 @@ ENV GIN_MODE=release \
     PORT=5672 \
     VHOST=/ \
     HTTP_PORT=8080
-RUN echo "user:x:10000:10000:user:/home/user:/bin/bash" >> /etc/passwd && chown user /home/user/mq-producer && chmod u+x /home/user/mq-producer
+RUN echo "user:x:10000:10000:user:/home/user:/bin/bash" >> /etc/passwd && chown -R user /home/user/ && chmod u+x mq-producer
 EXPOSE ${HTTP_PORT}
 USER user
 ENTRYPOINT ["./mq-producer"]
