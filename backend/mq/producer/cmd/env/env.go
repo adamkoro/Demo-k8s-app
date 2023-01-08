@@ -51,7 +51,7 @@ func CheckUsername(username string) string {
 	if len(username) != 0 {
 		return username
 	}
-	username = "quest"
+	username = "guest"
 	return username
 }
 
