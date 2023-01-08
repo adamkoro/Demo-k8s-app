@@ -38,4 +38,5 @@ volumes:
 
 trigger:
   repo:
-    - /backend/mq/producer/**
+    include:
+      - backend/mq/producer/**
