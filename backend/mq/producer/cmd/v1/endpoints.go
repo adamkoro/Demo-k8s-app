@@ -6,7 +6,6 @@ import (
 	logger "demo-k8s-app/mq-communicator/log"
 	"demo-k8s-app/mq-communicator/mq"
 	"demo-k8s-app/mq-communicator/structs"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -55,7 +54,7 @@ func Health(c *gin.Context) {
 
 	conn.Close()
 	msgOK.Status = StatusHealthy
-	msgOK.Message = ConnectionSuccsess
+	msgOK.Message = ConnectionSuccess
 	c.JSON(http.StatusOK, msgOK)
 }
 
@@ -85,28 +84,19 @@ func SendMessageToMq(c *gin.Context) {
 	errorExist := logger.IsError(err)
 	if errorExist {
 		msgError.Message = JsonValidationError
+		logger.ErrorLogger.Printf("%s: %s", err, msgError.Message)
 		c.AbortWithStatusJSON(http.StatusBadRequest, msgError)
 		return
 	}
-	if msg.Queue == "" {
-		msgError.Message = "Missing Queue field or empty"
-		c.AbortWithStatusJSON(http.StatusBadRequest, msgError.Message)
-		return
-	}
-	if msg.Data == "" {
-		msgError.Message = "Missing Data field or empty"
-		c.AbortWithStatusJSON(http.StatusBadRequest, msgError.Message)
-		return
-	}
 
-	fmt.Println(env.Queues)
 	// Check requested queue name
 	for _, queueName := range env.Queues {
 		if msg.Queue == queueName {
 			break
 		} else {
-			msgError.Message = "Requested qeueu not found in avaiable list"
-			c.AbortWithStatusJSON(http.StatusBadRequest, msgError.Message)
+			msgError.Message = QueueNotFound
+			logger.ErrorLogger.Printf("%s available queues: %s", msgError.Message, env.Queues)
+			c.AbortWithStatusJSON(http.StatusBadRequest, msgError)
 			return
 		}
 	}
@@ -132,7 +122,7 @@ func SendMessageToMq(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, msgError)
 		return
 	}
-	msgOk.Message = QueueSuccessfull
+	msgOk.Message = QueueSuccessfully
 	logger.InfoLogger.Printf("%s", msgOk.Message)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
