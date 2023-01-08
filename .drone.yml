@@ -40,3 +40,9 @@ trigger:
   repo:
     include:
       - backend/mq/producer/**
+  event:
+    include:
+    - push
+  branch:
+    include:
+      - dev
