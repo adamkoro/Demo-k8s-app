@@ -1,15 +1,19 @@
 package env
 
 import (
+	"fmt"
 	"os"
+	"strings"
 )
 
 var (
-	Username string
-	Password string
-	MqHost   string
-	Port     string
-	Vhost    string
+	Username  string
+	Password  string
+	MqHost    string
+	Port      string
+	Vhost     string
+	Queues    []string
+	tmpQueues string
 )
 
 // Get environment variables
@@ -31,6 +35,10 @@ func getPort() string {
 
 func getVhost() string {
 	return os.Getenv("VHOST")
+}
+
+func getQueues() string {
+	return os.Getenv("QUEUE_NAMES")
 }
 
 // Set default value to variable if empty
@@ -75,6 +83,14 @@ func CheckVhost(vhost string) string {
 	return vhost
 }
 
+func CheckQueues(queue string) []string {
+	fmt.Println(queue)
+	if len(queue) != 0 {
+		return strings.Split(queue, ",")
+	}
+	return []string{"test1", "test2", "test3"}
+}
+
 // Set variables value from environment variables
 func getValues() {
 	Username = getUsername()
@@ -82,6 +98,7 @@ func getValues() {
 	MqHost = getMqHost()
 	Port = getPort()
 	Vhost = getVhost()
+	tmpQueues = getQueues()
 
 }
 
@@ -93,4 +110,5 @@ func CheckEnvs() {
 	MqHost = CheckMqHost(MqHost)
 	Port = CheckPort(Port)
 	Vhost = CheckVhost(Vhost)
+	Queues = CheckQueues(tmpQueues)
 }

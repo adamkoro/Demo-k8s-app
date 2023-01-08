@@ -1,4 +1,4 @@
-package messageHandler
+package log
 
 import (
 	"log"

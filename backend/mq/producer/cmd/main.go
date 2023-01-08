@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"demo-k8s-app/mq-communicator/env"
-	"demo-k8s-app/mq-communicator/messageHandler"
+	logger "demo-k8s-app/mq-communicator/log"
 	"demo-k8s-app/mq-communicator/mq"
 	endpoints "demo-k8s-app/mq-communicator/v1"
 
@@ -17,38 +17,42 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-var serviceEndpoint = "/producer/v1"
+var (
+	serviceName = "/producer"
+	apiEndpoint = serviceName + "/v1"
+)
 
 func init() {
 	env.CheckEnvs()
 
 	var err error
 	endpoints.Connection, err = mq.ConnectToMq(mq.CreateConnUrl(env.Username, env.Password, env.MqHost, env.Port, env.Vhost))
-	errorExist := messageHandler.IsError(err)
+	errorExist := logger.IsError(err)
 	if errorExist {
-		msg := "Failed to connect to RabbitMQ"
-		messageHandler.ErrorLogger.Printf("%s: %s", err, msg)
+		logger.ErrorLogger.Printf("%s: %s", err, endpoints.ConnectionFailed)
 	}
+
 }
 
 func main() {
 	router := gin.Default()
 
-	// Defautl route
+	// Root "/" redirect to default service route
 	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/producer")
+		c.Redirect(http.StatusMovedPermanently, serviceName)
 	})
-	// Api V1
-	docs.SwaggerInfo.BasePath = serviceEndpoint
-	v1 := router.Group(serviceEndpoint)
+
+	// Api V1 with swagger json host
+	docs.SwaggerInfo.BasePath = apiEndpoint
+	v1 := router.Group(apiEndpoint)
 	{
 		v1.GET("/ping", endpoints.Ping)
 		v1.GET("/health", endpoints.Health)
-		v1.GET("/push", endpoints.SendMessageToMq)
+		v1.POST("/push", endpoints.SendMessageToMq)
 		v1.StaticFile("/docs/swagger.json", "docs/swagger.json")
 	}
 
-	url := ginSwagger.URL("http://localhost:8081" + serviceEndpoint + "/docs/swagger.json") // The url pointing to API definition
+	url := ginSwagger.URL("http://localhost:8081" + apiEndpoint + "/docs/swagger.json") // The url pointing to API definition
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	// Http server config

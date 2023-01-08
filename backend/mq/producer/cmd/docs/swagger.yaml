@@ -16,8 +16,23 @@ definitions:
     type: object
   structs.ReadinessResponseStatusOk:
     properties:
+      message:
+        example: Sucessfully connected to RabbitMQ
+        type: string
       status:
         example: healthy
+        type: string
+    type: object
+  structs.ResponseMessageError:
+    properties:
+      message:
+        example: Failed to push message to the queue
+        type: string
+    type: object
+  structs.ResponseMessageOk:
+    properties:
+      message:
+        example: Successfully published message to the queue
         type: string
     type: object
 info:
@@ -49,6 +64,24 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/structs.LivenessResponse'
+      tags:
+      - health
+  /producer/v1/push:
+    post:
+      consumes:
+      - application/json
+      description: sending data to RabbitMQ
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.ResponseMessageOk'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/structs.ResponseMessageError'
       tags:
       - health
 swagger: "2.0"

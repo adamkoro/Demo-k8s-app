@@ -59,6 +59,34 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/producer/v1/push": {
+            "post": {
+                "description": "sending data to RabbitMQ",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ResponseMessageOk"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/structs.ResponseMessageError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -87,9 +115,31 @@ const docTemplate = `{
         "structs.ReadinessResponseStatusOk": {
             "type": "object",
             "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Sucessfully connected to RabbitMQ"
+                },
                 "status": {
                     "type": "string",
                     "example": "healthy"
+                }
+            }
+        },
+        "structs.ResponseMessageError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Failed to push message to the queue"
+                }
+            }
+        },
+        "structs.ResponseMessageOk": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Successfully published message to the queue"
                 }
             }
         }
