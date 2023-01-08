@@ -1,6 +1,6 @@
 FROM harbor.adamkoro.com/bci/golang:1.19 as build
 WORKDIR /go/src/build
-COPY app/ ${WORKDIR}
+COPY cmd/ ${WORKDIR}
 RUN go mod download
 RUN go build -ldflags="-s -w" -o /mq-producer
 
