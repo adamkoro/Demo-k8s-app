@@ -35,3 +35,7 @@ services:
 volumes:
 - name: dockersock
   temp: {}
+
+trigger:
+  repo:
+    - /backend/mq/producer/**
