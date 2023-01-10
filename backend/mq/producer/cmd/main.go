@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	endpoints "demo-k8s-app/mq-communicator/api/v1"
 	docs "demo-k8s-app/mq-communicator/docs"
 	"demo-k8s-app/mq-communicator/env"
 	logger "demo-k8s-app/mq-communicator/log"
 	"demo-k8s-app/mq-communicator/mq"
-	endpoints "demo-k8s-app/mq-communicator/v1"
 
 	"github.com/gin-gonic/gin"
 )
