@@ -15,4 +15,5 @@ var (
 	MessagePushFailed   = "Failed to push message to the queue"
 	JsonValidationError = "Failed to validate the posted data"
 	InvalidHeader       = "Invalid Content-Type header, expected: application/json"
+	MethodNotAllowed    = "Method not allowed"
 )
