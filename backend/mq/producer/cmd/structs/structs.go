@@ -24,5 +24,5 @@ type ResponseMessageError struct {
 
 type QueueMessage struct {
 	Queue string `json:"queue" binding:"required" example:"test"`
-	Data  string `json:"data" binding:"required" example:"{ data: 1}"`
+	Data  string `json:"data" binding:"required" example:"{ data: 1 }"`
 }
